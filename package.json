@@ -1,0 +1,30 @@
+{
+  "name": "angular-quickstart",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npm run lite",
+    "lite": "lite-server"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "~1.6.4",
+    "@angular/compiler": "~1.6.4",
+    "@angular/core": "~1.6.4",
+    "@angular/forms": "~1.6.4",
+    "@angular/http": "~1.6.4",
+    "@angular/platform-browser": "~1.6.4",
+    "@angular/platform-browser-dynamic": "~1.6.4",
+    "@angular/router": "~3.4.0",
+    "@angular/upgrade": "~1.6.4",
+    "angular-in-memory-web-api": "~0.3.1",
+    "angular-loading-spinner": "0.0.3",
+    "core-js": "^2.4.1",
+    "laravel-elixir": "^6.0.0-15",
+    "rxjs": "5.0.1",
+    "zone.js": "^0.8.4"
+  },
+  "devDependencies": {
+    "concurrently": "^3.0.0",
+    "lite-server": "^2.2.2"
+  }
+}

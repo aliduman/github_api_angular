@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="tr" ng-app="gitUserModule">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test Angular Framework</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .thumbnail .img-content{
+            overflow: hidden;
+            max-height:230px;
+        }
+        .thumbnail .img-content img{
+            width: 100%;
+        }
+        .form-inline input[type=text]{
+            width: 70%;
+        }
+        .form-inline button{
+            width: 28% !important;
+        }
+    </style>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script type="text/javascript" src="http://fgnass.github.io/spin.js/spin.min.js"></script>
+    <script src="node_modules/angular-spinner/angular-spinner.min.js"></script>
+    <script type="text/javascript">
+
+        var myApp = angular.module('gitUserModule',[]);
+
+
+        myApp.controller('UserListController',['$scope','$http',function ($scope, $http) {
+            //Spinner
+            $scope.startSpin = function(){
+                usSpinnerService.spin('spinner-1');
+            };
+            $scope.stopSpin = function(){
+                usSpinnerService.stop('spinner-1');
+            };
+
+            $scope.userData = [];
+            $scope.searchData = null;
+            $scope.search = function () {
+                $scope.userData = [];
+                $http({
+                    method: 'GET',
+                    url: 'https://api.github.com/users/'+$scope.searchData+'/followers'
+                }).then(function successCallback(response) {
+                    // this callback will be called asynchronously
+                    // when the response is available
+                    angular.forEach(response.data,function (value,key) {
+                        this.push(value);
+                    },$scope.userData);
+                    console.log(response);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                    console.log(response);
+                });
+            }
+
+            $scope.detail = function (login) {
+                $scope.userDetail = [];
+                $http({
+                    method: 'GET',
+                    url: 'https://api.github.com/users/'+login
+                }).then(function successCallback(response) {
+                    // this callback will be called asynchronously
+                    // when the response is available
+                    $scope.userDetail = response.data;
+                    $('#user-detail').modal('show');
+                    console.log(response.data);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                    console.log(response);
+                });
+            };
+
+            /*
+             * expose the event object to the scope
+             */
+            $scope.clickMe = function(clickEvent) {
+                $scope.clickEvent = simpleKeys(clickEvent);
+                console.log(clickEvent);
+            };
+
+            $scope.fn = function (event) {
+                console.log(event);
+                $scope.keyCode = event.keyCode;
+            }
+
+            /*
+             * return a copy of an object with only non-object keys
+             * we need this to avoid circular references
+             */
+            function simpleKeys (original) {
+                return Object.keys(original).reduce(function (obj, key) {
+                    obj[key] = typeof original[key] === 'object' ? '{ ... }' : original[key];
+                    return obj;
+                }, {});
+            }
+
+
+            /*
+            var i=0;
+            $scope.myFunct = function(myEnter) {
+                if (myEnter.which === 13)i++;
+                console.log("My number enter:"+i);
+                console.log("My keycode:"+myEnter.which);
+            }
+            */
+        }]);
+
+        myApp.directive('myEnter', function () {
+            return function (scope, element, attrs) {
+                element.bind("keydown keypress", function (event) {
+                    if(event.which === 13) {
+                        scope.$apply(function (){
+                            scope.$eval(attrs.myEnter);
+                        });
+
+                        event.preventDefault();
+                    }
+                });
+            };
+        });
+    </script>
+</head>
+
+<body ng-controller="UserListController">
+<h1 class="text-center">Github Fallowers Search</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-offset-4 col-lg-4">
+            <div class="form-group">
+                <form method="post" role="form" class="form-inline">
+                    <div class="form-group">
+                        <pre>Keycode: {{keyCode}}</pre>
+                        <input type="text" class="form-control" name="" id="" ng-model="searchData" placeholder="Bi şeyler yaz...."  ng-keydown="fn($event)">
+                        <button class="form-control" ng-click="search()">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" ng-repeat="data in userData">
+                    <div class="thumbnail">
+                        <div class="img-content">
+                            <img src="{{data.avatar_url}}" alt="{{data.login}">
+                        </div>
+                        <div class="caption">
+                            <h3>{{data.login}}</h3>
+                            <p>
+                                <a href="javascript:void(0);" class="btn btn-primary" ng-click="detail(data.login)">View Profile</a>
+                            </p>
+                        </div>
+                    </div><!-- /.thumbnail -->
+                </div><!-- /.col-lg-3 -->
+            </div><!-- /.row -->
+        </div><!-- /.col-lg-12 -->
+    </div><!-- /.row -->
+</div><!-- /.container -->
+<div class="modal fade" id="user-detail">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{userDetail.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-offset-4 col-lg-4">
+                        <a href="#" class="thumbnail">
+                            <img src="{{userDetail.avatar_url}}" alt="{{userDetail.name}}">
+                        </a>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <tbody>
+                        <tr>
+                            <th width="20%">Username:</th>
+                            <td>{{userDetail.name}}</td>
+                        </tr>
+                        <tr>
+                            <th>Company:</th>
+                            <th>{{userDetail.company}}</th>
+                        </tr>
+                        <tr>
+                            <th>Blog:</th>
+                            <th>{{userDetail.blog}}</th>
+                        </tr>
+                        <tr>
+                            <th>Location:</th>
+                            <th>{{userDetail.location}}</th>
+                        </tr>
+                        <tr>
+                            <th>Mail:</th>
+                            <th>{{userDetail.email}}</th>
+                        </tr>
+                        <tr>
+                            <th>Hireable:</th>
+                            <th>{{userDetail.hireable}}</th>
+                        </tr>
+                        <tr>
+                            <th>Biography</th>
+                            <th>{{userDetail.bio}}</th>
+                        </tr>
+                        <tr>
+                            <th>Repo Count:</th>
+                            <th>{{userDetail.public_repos}}</th>
+                        </tr>
+                        <tr>
+                            <th>Gist Count:</th>
+                            <th>{{userDetail.public_gists}}</th>
+                        </tr>
+                        <tr>
+                            <th>Fallowers Count:</th>
+                            <th>{{userDetail.followers}}</th>
+                        </tr>
+                        <tr>
+                            <th>Fallowing Count:</th>
+                            <th>{{userDetail.following}}</th>
+                        </tr>
+                        <tr>
+                            <th>Sign Up Date:</th>
+                            <th>{{userDetail.created_at}}</th>
+                        </tr>
+                        <tr>
+                            <th>Sign In Date:</th>
+                            <th>{{userDetail.updated_at}}</th>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery.js"></script>
+<!-- Bootstrap JavaScript -->
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

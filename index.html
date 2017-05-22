@@ -34,109 +34,7 @@
 
     <script src="node_modules/angular/angular.min.js"></script>
     <script type="text/javascript" src="http://fgnass.github.io/spin.js/spin.min.js"></script>
-    <script src="node_modules/angular-spinner/angular-spinner.min.js"></script>
-    <script type="text/javascript">
-
-        var myApp = angular.module('gitUserModule',[]);
-
-
-        myApp.controller('UserListController',['$scope','$http',function ($scope, $http) {
-            //Spinner
-            $scope.startSpin = function(){
-                usSpinnerService.spin('spinner-1');
-            };
-            $scope.stopSpin = function(){
-                usSpinnerService.stop('spinner-1');
-            };
-
-            $scope.userData = [];
-            $scope.searchData = null;
-            $scope.search = function () {
-                $scope.userData = [];
-                $http({
-                    method: 'GET',
-                    url: 'https://api.github.com/users/'+$scope.searchData+'/followers'
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    angular.forEach(response.data,function (value,key) {
-                        this.push(value);
-                    },$scope.userData);
-                    console.log(response);
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                    console.log(response);
-                });
-            }
-
-            $scope.detail = function (login) {
-                $scope.userDetail = [];
-                $http({
-                    method: 'GET',
-                    url: 'https://api.github.com/users/'+login
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    $scope.userDetail = response.data;
-                    $('#user-detail').modal('show');
-                    console.log(response.data);
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                    console.log(response);
-                });
-            };
-
-            /*
-             * expose the event object to the scope
-             */
-            $scope.clickMe = function(clickEvent) {
-                $scope.clickEvent = simpleKeys(clickEvent);
-                console.log(clickEvent);
-            };
-
-            $scope.fn = function (event) {
-                console.log(event);
-                $scope.keyCode = event.keyCode;
-            }
-
-            /*
-             * return a copy of an object with only non-object keys
-             * we need this to avoid circular references
-             */
-            function simpleKeys (original) {
-                return Object.keys(original).reduce(function (obj, key) {
-                    obj[key] = typeof original[key] === 'object' ? '{ ... }' : original[key];
-                    return obj;
-                }, {});
-            }
-
-
-            /*
-            var i=0;
-            $scope.myFunct = function(myEnter) {
-                if (myEnter.which === 13)i++;
-                console.log("My number enter:"+i);
-                console.log("My keycode:"+myEnter.which);
-            }
-            */
-        }]);
-
-        myApp.directive('myEnter', function () {
-            return function (scope, element, attrs) {
-                element.bind("keydown keypress", function (event) {
-                    if(event.which === 13) {
-                        scope.$apply(function (){
-                            scope.$eval(attrs.myEnter);
-                        });
-
-                        event.preventDefault();
-                    }
-                });
-            };
-        });
-    </script>
+    <script src="controller.js"></script>
 </head>
 
 <body ng-controller="UserListController">
@@ -158,10 +56,10 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="row">
-                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" ng-repeat="data in userData">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2" ng-repeat="data in userData">
                     <div class="thumbnail">
                         <div class="img-content">
-                            <img src="{{data.avatar_url}}" alt="{{data.login}">
+                            <img src="{{data.avatar_url}}" alt="{{data.login}}">
                         </div>
                         <div class="caption">
                             <h3>{{data.login}}</h3>
@@ -203,7 +101,7 @@
                         </tr>
                         <tr>
                             <th>Blog:</th>
-                            <th>{{userDetail.blog}}</th>
+                            <th><a href="{{userDetail.blog}}" target="_blank">{{userDetail.blog}}</a></th>
                         </tr>
                         <tr>
                             <th>Location:</th>
@@ -249,8 +147,27 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="table-responsive">
+                    <legend>Repos</legend>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name:</th>
+                                <th>Description:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="f in followUsers">
+                                <td>{{f.name}}</td>
+                                <td>{{f.description}}</td>
+                                <td>{{f.language}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="following(userDetail.login)">Repos</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div><!-- /.modal-content -->

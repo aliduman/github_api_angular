@@ -4,21 +4,27 @@ var rename = require('gulp-rename');
 var concat = require('gulp-concat');
 var browserSync = require('browser-sync');
 var sass = require('gulp-sass');
-var elixir = require('laravel-elixir');
 
 //Task in Variable
 var SERVER_BASE_DIR = './';
 
-gulp.task('browser-sync', function() {
-  browserSync({
-    server: {
-      baseDir: SERVER_BASE_DIR
-    }
-  });
+// Static Server + watching scss/html files
+gulp.task('serve', ['sass'], function() {
+
+    browserSync.init({
+        server: SERVER_BASE_DIR
+    });
+
+    //gulp.watch("appscss/*.scss", ['sass']);
+    gulp.watch("*").on('change', browserSync.reload);
 });
 
-gulp.task('bs-reload', function() {
-  browserSync.reload();
+// Compile sass into CSS & auto-inject into browsers
+gulp.task('sass', function() {
+    return gulp.src("app/scss/*.scss")
+        .pipe(sass())
+        .pipe(gulp.dest("app/css"))
+        .pipe(browserSync.stream());
 });
 
-gulp.task('default', ['browser-sync']);
+gulp.task('default', ['serve']);

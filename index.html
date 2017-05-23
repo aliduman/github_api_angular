@@ -17,13 +17,16 @@
         .thumbnail .img-content img{
             width: 100%;
         }
-        .form-inline input[type=text]{
-            width: 70%;
+        .form-inline .form-control,
+        .form-inline .form-group
+        {
+            width: 100%;
         }
-        .form-inline button{
-            width: 28% !important;
+        .form-inline .row > div{
+            padding: 0;
         }
     </style>
+    <link href="animate.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -33,21 +36,32 @@
     <![endif]-->
 
     <script src="node_modules/angular/angular.min.js"></script>
+    <script src="node_modules/angular-animate/angular-animate.min.js"></script>
     <script type="text/javascript" src="http://fgnass.github.io/spin.js/spin.min.js"></script>
     <script src="controller.js"></script>
+    <script src="modules.js"></script>
 </head>
 
 <body ng-controller="UserListController">
 <h1 class="text-center">Github Fallowers Search</h1>
 <div class="container">
     <div class="row">
-        <div class="col-lg-offset-4 col-lg-4">
+        <div class="col-lg-offset-3 col-lg-6">
             <div class="form-group">
                 <form method="post" role="form" class="form-inline">
                     <div class="form-group">
-                        <pre>Keycode: {{keyCode}}</pre>
-                        <input type="text" class="form-control" name="" id="" ng-model="searchData" placeholder="Bi şeyler yaz...."  ng-keydown="fn($event)">
-                        <button class="form-control" ng-click="search()">Search</button>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <pre>Keycode: {{keyCode}}</pre>
+                            </div>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" name="" id="" ng-model="searchData" placeholder="Bi şeyler yaz...."  ng-keydown="fn($event)">
+                            </div>
+                            <div class="col-lg-2">
+                                <button class="form-control" ng-click="search()"><i class="glyphicon glyphicon-search"></i>  Search</button>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -55,8 +69,8 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <div class="row">
-                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2" ng-repeat="data in userData">
+            <div class="row slide-animate-container">
+                <div class="col-xs-6 col-sm-3 col-md-3 col-lg-2 slide-animate" ng-repeat="data in userData">
                     <div class="thumbnail">
                         <div class="img-content">
                             <img src="{{data.avatar_url}}" alt="{{data.login}}">

@@ -1,4 +1,4 @@
-var myApp = angular.module('gitUserModule',[]);
+var myApp = angular.module('gitUserModule',['ngAnimate']);
 
 
         myApp.controller('UserListController',['$scope','$http',function ($scope, $http) {

@@ -36,6 +36,8 @@ var myApp = angular.module('gitUserModule',['ngAnimate']);
                     $scope.followUsers = [];
                     $('#user-detail').modal('show');
                     console.log(response.data);
+
+                    $scope.getRepos(response.data.login);
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
                     // or server returns response with an error status.
@@ -43,7 +45,7 @@ var myApp = angular.module('gitUserModule',['ngAnimate']);
                 });
             };
 
-            $scope.following = function (login) {
+            $scope.getRepos = function (login) {
                 
                 $http({
                     method: 'GET',
